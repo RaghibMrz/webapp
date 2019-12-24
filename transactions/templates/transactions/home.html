@@ -1,0 +1,11 @@
+{% extends "transactions/base.html" %}
+{% block ctt %}
+	<h1>Transactions Page</h1>
+	{% for data in db %}
+		<h2>{{data.fName}}</h2>
+		<h2>{{data.sName}}</h2>
+		<h2>{{data.mName}}</h2>
+		<h2>{{data.balance}}</h2>
+		<h2><br></h2>
+	{% endfor %}
+{% endblock ctt %} 
