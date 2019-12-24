@@ -2,9 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UserRegistrationForm
 
-def login(request):
-	return render(request, 'users/login.html')
-
 def register(request):
 	if request.method == 'POST':
 		form = UserRegistrationForm(request.POST)
@@ -19,5 +16,3 @@ def register(request):
 
 def forgot(request):
 	return render(request, 'users/forgot-password.html')
-
-
