@@ -1,6 +1,9 @@
 {% extends "transactions/base.html" %}
 {% block ctt %}
 	<h1>Transactions Page</h1>
+	<h2>
+		{{ username }}
+	</h2>
 	{% for data in db %}
 		<h2>{{data.fName}}</h2>
 		<h2>{{data.sName}}</h2>
