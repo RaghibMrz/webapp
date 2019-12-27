@@ -12,12 +12,11 @@ class Profile(models.Model):
 
 	#overriding save method to scale down any uploaded picture
 	#optimises speed and saves space
-	def save(self):
-		super().save()
+	def save(self, *args, **kwargs):
+		super().save(*args, **kwargs)
 
 		image = Image.open(self.img.path)
-		print(image.height)
-		print(image.width)
+
 		if image.height > 200 or image.width > 200:
 			outputSize = (200, 200)
 			image = image.resize(outputSize)
