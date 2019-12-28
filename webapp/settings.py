@@ -131,5 +131,17 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
-#trying email authentication
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#for email authentication
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'pwresetst45@gmail.com'
+EMAIL_HOST_PASSWORD = 'RagLibYuh45'
+
+#better practice to hide sensitive information
+#not needed since i made a fresh email account for this
+#dedicated purpose
+# EMAIL_HOST_USER = os.environ.get('GM_USER')
+# EMAIL_HOST_PASSWORD = os.environ.get('GM_PASS')
