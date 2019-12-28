@@ -6,9 +6,39 @@ from requests import auth
 import json
 from django.contrib import messages
 
-# me = auth.HTTPDigestAuth("admin", "admin")
-# resp = requests.get("https://team45resourcesdiag.blob.core.windows.net/bootdiagnostics-mlteam45-ed961ad5-34f2-4417-86af-a77c432a0c81/balance-test.json", auth=me)
-# datas = json.loads(resp.text)
+import requests,json
+from requests import auth
+me = auth.HTTPDigestAuth("admin", "admin")
+resp = requests.get("http://51.132.8.252:8060/v1/search?format=json", auth=me)
+jsonFile = json.loads(resp.text)
+result = jsonFile["results"]
+a=[]
+for key in result:
+    uri = key["uri"]
+    res = requests.get("http://51.132.8.252:8060/v1/documents?uri=" + uri, auth = me)
+    a.append(res.json())
+print(a)
+ 
+a = [
+	{'accounts': [
+		{'id': '8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0',
+		'label': 'My Account',
+		'bank_id': 'GENODEM1GLS',
+		'account_routings': [
+			{'scheme': 'accountNumber',
+			'address': '123456'}
+			],
+		'balance': 
+			{'currency': 'EUR',
+			'amount': '100' }
+		}
+	], 'overall_balance': 
+			{'currency': 'EUR',
+			'amount': '100'},
+		'overall_balance_date': '2017-09-19T00:00:00Z'}
+]
+
+
 
 db = [
 	{
@@ -54,3 +84,11 @@ def profile(request):
 		'pForm': pForm,
 	}
 	return render(request, 'transactions/profile.html', context)
+
+@login_required
+def transactions(request):
+	return render(request, 'transactions/transactions.html')
+
+@login_required
+def report(request):
+	return render(request, 'transactions/report.html')
