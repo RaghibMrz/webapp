@@ -5,6 +5,8 @@ import requests
 from requests import auth
 import json
 from django.contrib import messages
+from django.core.mail import send_mail
+from . forms import ContactForm
 
 import requests,json
 from requests import auth
@@ -17,26 +19,26 @@ for key in result:
     uri = key["uri"]
     res = requests.get("http://51.132.8.252:8060/v1/documents?uri=" + uri, auth = me)
     a.append(res.json())
-print(a)
+# print(a)
  
-a = [
-	{'accounts': [
-		{'id': '8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0',
-		'label': 'My Account',
-		'bank_id': 'GENODEM1GLS',
-		'account_routings': [
-			{'scheme': 'accountNumber',
-			'address': '123456'}
-			],
-		'balance': 
-			{'currency': 'EUR',
-			'amount': '100' }
-		}
-	], 'overall_balance': 
-			{'currency': 'EUR',
-			'amount': '100'},
-		'overall_balance_date': '2017-09-19T00:00:00Z'}
-]
+# a = [
+# 	{'accounts': [
+# 		{'id': '8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0',
+# 		'label': 'My Account',
+# 		'bank_id': 'GENODEM1GLS',
+# 		'account_routings': [
+# 			{'scheme': 'accountNumber',
+# 			'address': '123456'}
+# 			],
+# 		'balance': 
+# 			{'currency': 'EUR',
+# 			'amount': '100' }
+# 		}
+# 	], 'overall_balance': 
+# 			{'currency': 'EUR',
+# 			'amount': '100'},
+# 		'overall_balance_date': '2017-09-19T00:00:00Z'}
+# ]
 
 
 
@@ -92,3 +94,19 @@ def transactions(request):
 @login_required
 def report(request):
 	return render(request, 'transactions/report.html')
+
+@login_required
+def help(request):
+	if request.method == "POST":
+		form = ContactForm(request.POST)
+		if form.is_valid:
+			form.save()
+			messages.success(request, f'Message sent!')
+			send_mail(form.cleaned_data.get('subject'), form.cleaned_data.get('message')+"\n\n Reply to: "+form.cleaned_data.get('email'), 'pwresetst45@gmail.com', ['pwresetst45@gmail.com'])
+			return redirect('home')
+	else:
+		form = ContactForm()
+	context = {
+		'form' : form
+	}
+	return render(request, 'transactions/help.html', context)
