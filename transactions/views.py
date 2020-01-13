@@ -72,6 +72,7 @@ def profile(request):
 		if uForm.is_valid() and pForm.is_valid():
 			uForm.save()
 			pForm.save()
+			print(form.cleaned_data.get('userID'))
 			messages.success(request, f'Account successfully updated')
 			return redirect('profile')
 	#return statement in line above is to prevent user from falling to line below

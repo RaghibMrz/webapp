@@ -12,7 +12,7 @@ from PIL import Image
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	img = models.ImageField(default='default.png', upload_to='profilePics')
-	userID = models.CharField(max_length=64)
+	userID = models.CharField(max_length=14, blank=True, help_text="Please enter the 14 digit identification to allow us to connect you to the database")
 
 
 	def __str__(self):
