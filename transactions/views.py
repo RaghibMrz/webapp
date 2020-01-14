@@ -12,7 +12,7 @@ me = auth.HTTPDigestAuth("admin", "admin")
 
 def getRows(userID):
 	row = []
-	transactionAttributes = ["BookingDateTime", "TransactionInformation", "Amount"]
+	transactionAttributes = ["BookingDateTime", "TransactionInformation", "Amount", "Currency"]
 	id = str(userID)
 	res = requests.get("http://51.132.8.252:8060/v1/documents?uri=/documents/" + id +".json", auth = me)
 	if (res.status_code == 404):
@@ -22,11 +22,12 @@ def getRows(userID):
 		collecting = {
 			'BookingDateTime': '',
 			'TransactionInformation': '',
-			'Amount': ''
+			'Amount': '',
+			'Currency': ''
 		}
 		for attribute in transactionAttributes:
-			if (attribute == "Amount"):
-				collecting['Amount'] = transaction[str(attribute)][str(attribute)]
+			if ((attribute == "Amount") or (attribute == "Currency")) :
+				collecting[attribute] = transaction['Amount'][str(attribute)]
 			else:
 				collecting[attribute] = transaction[str(attribute)]
 		row.append(collecting)
@@ -40,7 +41,8 @@ def home(request):
 			'rows': [{
 			'BookingDateTime': 'No Data Found',
 			'TransactionInformation': 'Incorrect UserID linked',
-			'Amount': 'Update userID and try again'
+			'Amount': 'Update userID'
+			'Currency': 'and try again'
 			}]
 		}
 		return render(request, 'transactions/home.html', context)
