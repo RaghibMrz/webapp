@@ -1,5 +1,6 @@
 {% extends "transactions/base.html" %}
 {% block ctt %}
+{% load static %}
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
@@ -154,19 +155,19 @@
                 <table class="table table-bordered  " id="datatable" width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                    <th>Name</th>
-                    <th>Account Number</th>
-                    <th>Location</th>
+                    <th>Date</th>
+                    <th>Transaction</th>
                     <th>Amount</th>
                     </tr>
                 </thead>
                 <tbody>
+                  {% for row in rows %}
                     <tr>
-                    <td>Alan Williams</td>
-                    <td>1029301799</td>
-                    <td>Pret A Manger</td>
-                    <td>$7.80</td>
+                    <td>{{ row.BookingDateTime }}</td>
+                    <td>{{ row.TransactionInformation }}</td>
+                    <td>{{ row.Amount }}</td>
                     </tr>
+                  {% endfor %}
                 </tbody>
                 </table>
             </div>
@@ -200,25 +201,8 @@
         </div>
         <!-- Card Body -->
         <div class="card-body">
-          <div class="chart-pie pt-4 pb-2">
-            <canvas id="myPieChart"></canvas>
-          </div>
-          <div class="mt-4 text-center small">
-            <span class="mr-2">
-              <i class="fas fa-circle text-primary"></i> Food
-            </span>
-            <span class="mr-2">
-              <i class="fas fa-circle text-success"></i> Groceries
-            </span>
-            <span class="mr-2">
-              <i class="fas fa-circle text-info"></i> Entertainment
-            </span>
-            <span class="mr-2">
-              <i class="fas fa-circle text-japanese-indigo"></i> Bills
-            </span>
-            <span class="mr-2">
-              <i class="fas fa-circle text-pastel-blue"></i> Transport
-            </span>
+          <div class="pie mt-4 pb-2">
+            <img src="{% static 'transactions/img/pie.jpg' %}" style="max-width:100%;">
           </div>
         </div>
       </div>
@@ -250,10 +234,10 @@
           </div>
           <!-- Card Body -->
           <div class="card-body">
-            <div class="chart-area">
-              <canvas id="myAreaChart"></canvas>
-            </div>
+          <div class="line mt-4 pb-2">
+            <img src="{% static 'transactions/img/line.jpg' %}" style="max-width:100%;">
           </div>
+        </div>
         </div>
       </div>
   </div>

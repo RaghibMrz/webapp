@@ -3,76 +3,61 @@ from django.contrib.auth.decorators import login_required
 from users.forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
 import requests
 from requests import auth
-import json
 from django.contrib import messages
 from django.core.mail import send_mail
 from . forms import ContactForm
+import requests,json, urllib
 
-import requests,json
-from requests import auth
 me = auth.HTTPDigestAuth("admin", "admin")
-resp = requests.get("http://51.132.8.252:8060/v1/search?format=json", auth=me)
-jsonFile = json.loads(resp.text)
-result = jsonFile["results"]
-a=[]
-for key in result:
-    uri = key["uri"]
-    res = requests.get("http://51.132.8.252:8060/v1/documents?uri=" + uri, auth = me)
-    a.append(res.json())
-# print(a)
- 
-# a = [
-# 	{'accounts': [
-# 		{'id': '8ca8a7e4-6d02-40e3-a129-0b2bf89de9f0',
-# 		'label': 'My Account',
-# 		'bank_id': 'GENODEM1GLS',
-# 		'account_routings': [
-# 			{'scheme': 'accountNumber',
-# 			'address': '123456'}
-# 			],
-# 		'balance': 
-# 			{'currency': 'EUR',
-# 			'amount': '100' }
-# 		}
-# 	], 'overall_balance': 
-# 			{'currency': 'EUR',
-# 			'amount': '100'},
-# 		'overall_balance_date': '2017-09-19T00:00:00Z'}
-# ]
 
-
-
-db = [
-	{
-		'fName': 'Raghib',
-		'sName': 'Mirza',
-		'mName': 'n/a',
-		'balance': '£5,000'
-	},
-	{
-		'fName': 'Other',
-		'sName': 'Person',
-		'mName': 'Middle',
-		'balance': '£5,000,000'
-	},
-]
+def getRows(userID):
+	row = []
+	transactionAttributes = ["BookingDateTime", "TransactionInformation", "Amount"]
+	id = str(userID)
+	res = requests.get("http://51.132.8.252:8060/v1/documents?uri=/documents/" + id +".json", auth = me)
+	if (res.status_code == 404):
+		return False
+	a = json.loads(res.text)
+	for transaction in a['Data']['Transaction']:
+		collecting = {
+			'BookingDateTime': '',
+			'TransactionInformation': '',
+			'Amount': ''
+		}
+		for attribute in transactionAttributes:
+			if (attribute == "Amount"):
+				collecting['Amount'] = transaction[str(attribute)][str(attribute)]
+			else:
+				collecting[attribute] = transaction[str(attribute)]
+		row.append(collecting)
+	return row
 
 @login_required
 def home(request):
+	request.session.set_expiry(600)
+	if (getRows(request.user.profile.userID) == False):
+		context = {
+			'rows': [{
+			'BookingDateTime': 'No Data Found',
+			'TransactionInformation': 'Incorrect UserID linked',
+			'Amount': 'Update userID and try again'
+			}]
+		}
+		return render(request, 'transactions/home.html', context)
 	context = {
-		'db': db
+		'rows': getRows(request.user.profile.userID)
 	}
 	return render(request, 'transactions/home.html', context)
 
 @login_required
 def profile(request):
+	request.session.set_expiry(600)
 	if request.method == 'POST':
 		uForm = UserUpdateForm(request.POST, request.FILES, instance=request.user)
 		pForm = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
 		if uForm.is_valid() and pForm.is_valid():
 			uForm.save()
 			pForm.save()
-			print(form.cleaned_data.get('userID'))
 			messages.success(request, f'Account successfully updated')
 			return redirect('profile')
 	#return statement in line above is to prevent user from falling to line below
@@ -81,7 +66,6 @@ def profile(request):
 	else:
 		uForm = UserUpdateForm(instance=request.user)
 		pForm = ProfileUpdateForm(instance=request.user.profile)
-
 	context = {
 		'uForm': uForm,
 		'pForm': pForm,
@@ -90,14 +74,29 @@ def profile(request):
 
 @login_required
 def transactions(request):
-	return render(request, 'transactions/transactions.html')
+	request.session.set_expiry(600)
+	if (getRows(request.user.profile.userID) == False):
+		context = {
+			'rows': [{
+			'BookingDateTime': 'No Data Found',
+			'TransactionInformation': 'Incorrect UserID linked',
+			'Amount': 'Update userID and try again'
+			}]
+		}
+		return render(request, 'transactions/transactions.html', context)
+	context = {
+		'rows': getRows(request.user.profile.userID)
+	}
+	return render(request, 'transactions/transactions.html', context)
 
 @login_required
 def report(request):
+	request.session.set_expiry(600)
 	return render(request, 'transactions/report.html')
 
 @login_required
 def help(request):
+	request.session.set_expiry(600)
 	if request.method == "POST":
 		form = ContactForm(request.POST)
 		if form.is_valid:
