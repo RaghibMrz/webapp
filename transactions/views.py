@@ -41,7 +41,7 @@ def home(request):
 			'rows': [{
 			'BookingDateTime': 'No Data Found',
 			'TransactionInformation': 'Incorrect UserID linked',
-			'Amount': 'Update userID'
+			'Amount': 'Update userID',
 			'Currency': 'and try again'
 			}]
 		}
